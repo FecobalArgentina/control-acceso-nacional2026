@@ -15,7 +15,7 @@
 
 body{
 
-font-family:Arial, sans-serif;
+font-family:Arial,sans-serif;
 
 background:#f1f1f1;
 
@@ -31,17 +31,17 @@ text-align:center;
 
 .contenedor{
 
-background:white;
-
 max-width:520px;
 
 margin:auto;
+
+background:white;
 
 padding:20px;
 
 border-radius:18px;
 
-box-shadow:0 3px 12px rgba(0,0,0,.25);
+box-shadow:0 3px 12px #999;
 
 }
 
@@ -55,17 +55,15 @@ justify-content:space-between;
 
 align-items:center;
 
-margin-bottom:15px;
-
 }
 
 
 
 .logos img{
 
-max-width:120px;
+width:120px;
 
-max-height:80px;
+height:80px;
 
 object-fit:contain;
 
@@ -74,6 +72,8 @@ object-fit:contain;
 
 
 .titulo{
+
+margin-top:15px;
 
 background:#003b70;
 
@@ -91,27 +91,9 @@ font-weight:bold;
 
 
 
-.subtitulo{
-
-margin-top:15px;
-
-font-size:22px;
-
-font-weight:bold;
+h2{
 
 color:#003b70;
-
-}
-
-
-
-.sede{
-
-font-size:20px;
-
-margin-top:8px;
-
-font-weight:bold;
 
 }
 
@@ -123,15 +105,15 @@ width:100%;
 
 padding:20px;
 
-margin-top:20px;
+margin-top:15px;
+
+border:0;
+
+border-radius:15px;
 
 font-size:22px;
 
 font-weight:bold;
-
-border:none;
-
-border-radius:14px;
 
 background:#003b70;
 
@@ -141,19 +123,37 @@ color:white;
 
 
 
-#lector{
+.botonCancha{
 
-margin-top:20px;
+background:#003b70;
+
+margin-top:12px;
 
 }
 
 
 
-#resultado{
+.sede{
 
-margin-top:20px;
+font-size:22px;
 
-font-size:20px;
+font-weight:bold;
+
+}
+
+
+
+.dato{
+
+background:#eee;
+
+padding:14px;
+
+margin-top:10px;
+
+border-radius:10px;
+
+font-size:19px;
 
 }
 
@@ -169,7 +169,7 @@ padding:18px;
 
 border-radius:12px;
 
-font-size:25px;
+font-size:24px;
 
 font-weight:bold;
 
@@ -195,22 +195,6 @@ font-weight:bold;
 
 
 
-.dato{
-
-background:#eeeeee;
-
-padding:14px;
-
-border-radius:10px;
-
-margin-top:10px;
-
-font-size:19px;
-
-}
-
-
-
 .ingreso{
 
 background:#003b70;
@@ -219,15 +203,22 @@ color:white;
 
 padding:15px;
 
-border-radius:12px;
-
 margin-top:15px;
+
+border-radius:12px;
 
 font-size:22px;
 
-font-weight:bold;
+}
+
+
+
+.oculto{
+
+display:none;
 
 }
+
 
 
 </style>
@@ -242,18 +233,13 @@ font-weight:bold;
 <div class="contenedor">
 
 
-
 <div class="logos">
 
+<img src="imagenes/logo_fecobal.png">
 
-<img src="imagenes/logo fecobal.png">
-
-
-<img src="imagenes/logo cah.png">
-
+<img src="imagenes/logo_cah.png">
 
 </div>
-
 
 
 
@@ -264,26 +250,73 @@ font-weight:bold;
 ADULTOS A 2026
 
 </div>
-
-
-
-<div class="subtitulo" id="cancha">
-
+<h2 id="tituloControl">
 CONTROL DE ACCESO
+</h2>
+
+
+
+<div id="selectorCancha">
+
+
+<h2>
+
+Seleccione punto de acceso
+
+</h2>
+
+
+<button class="boton botonCancha" onclick="seleccionarCancha('Cancha 1')">
+
+🏟️ Cancha 1<br>
+Jockey Club
+
+</button>
+
+
+
+<button class="boton botonCancha" onclick="seleccionarCancha('Cancha 2')">
+
+🏟️ Cancha 2<br>
+IPEF
+
+</button>
+
+
+
+<button class="boton botonCancha" onclick="seleccionarCancha('Cancha 3')">
+
+🏟️ Cancha 3<br>
+Alta Gracia
+
+</button>
+
 
 </div>
 
 
-<div class="sede" id="sede">
-
-</div>
 
 
+
+<div id="control" class="oculto">
+
+
+<div class="sede" id="sede"></div>
 
 
 <button class="boton" onclick="iniciarScanner()">
 
 📷 ESCANEAR QR
+
+</button>
+
+
+
+<button 
+class="boton"
+onclick="cambiarCancha()">
+
+🔄 CAMBIAR CANCHA
 
 </button>
 
@@ -301,9 +334,7 @@ CONTROL DE ACCESO
 
 id="confirmar"
 
-class="boton"
-
-style="display:none"
+class="boton oculto"
 
 onclick="confirmarIngreso()">
 
@@ -317,9 +348,7 @@ onclick="confirmarIngreso()">
 
 id="nuevo"
 
-class="boton"
-
-style="display:none"
+class="boton oculto"
 
 onclick="nuevoEscaneo()">
 
@@ -328,9 +357,16 @@ onclick="nuevoEscaneo()">
 </button>
 
 
+</div>
+
+
 
 </div>
+
+
+
 <script>
+
 
 
 const API_URL =
@@ -338,69 +374,16 @@ const API_URL =
 
 
 
-let codigoActual = "";
+let canchaActual="";
 
-let scanner = null;
+let codigoActual="";
 
-let canchaActual = "Cancha 1";
-
-
+let scanner=null;
 
 
 
-// ===============================
-// SONIDOS
-// ===============================
+const sedes={
 
-
-const sonidoOK = new Audio(
-"https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
-);
-
-
-const sonidoError = new Audio(
-"https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-);
-
-
-
-
-
-
-
-// ===============================
-// CONFIGURAR CANCHA
-// ===============================
-
-
-let parametros =
-new URLSearchParams(
-window.location.search
-);
-
-
-let numeroCancha =
-parametros.get("cancha");
-
-
-
-if(numeroCancha=="2"){
-
-canchaActual="Cancha 2";
-
-}
-
-
-if(numeroCancha=="3"){
-
-canchaActual="Cancha 3";
-
-}
-
-
-
-
-let sedes = {
 
 "Cancha 1":"Jockey Club",
 
@@ -408,30 +391,182 @@ let sedes = {
 
 "Cancha 3":"Alta Gracia"
 
+
 };
 
 
 
 
-document.getElementById("cancha").innerHTML =
-
-"CONTROL "+canchaActual;
 
 
-
-document.getElementById("sede").innerHTML =
-
-sedes[canchaActual];
-
+// ============================
+// SONIDOS INTERNOS
+// ============================
 
 
+function sonidoOK(){
+
+
+let audio =
+new AudioContext();
+
+
+let osc =
+audio.createOscillator();
+
+
+osc.frequency.value=800;
+
+
+osc.connect(audio.destination);
+
+
+osc.start();
+
+
+osc.stop(
+audio.currentTime+0.15
+);
+
+
+}
 
 
 
 
-// ===============================
-// ABRIR CAMARA
-// ===============================
+
+function sonidoError(){
+
+
+let audio =
+new AudioContext();
+
+
+let osc =
+audio.createOscillator();
+
+
+osc.frequency.value=250;
+
+
+osc.connect(audio.destination);
+
+
+osc.start();
+
+
+osc.stop(
+audio.currentTime+0.3
+);
+
+
+}
+
+
+
+
+
+
+
+// ============================
+// CARGAR CANCHA GUARDADA
+// ============================
+
+
+window.onload=function(){
+
+
+
+let guardada =
+localStorage.getItem("canchaControl");
+
+
+
+if(guardada){
+
+
+seleccionarCancha(
+guardada
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+// ============================
+// SELECCIONAR CANCHA
+// ============================
+
+
+function seleccionarCancha(cancha){
+
+
+
+canchaActual=cancha;
+
+
+
+localStorage.setItem(
+"canchaControl",
+cancha
+);
+
+
+
+document.getElementById(
+"selectorCancha"
+).style.display="none";
+
+
+
+document.getElementById(
+"control"
+).classList.remove("oculto");
+
+
+
+document.getElementById(
+"sede"
+).innerHTML =
+
+cancha+
+"<br>"+
+sedes[cancha];
+
+
+
+}
+
+
+
+
+
+
+function cambiarCancha(){
+
+
+localStorage.removeItem(
+"canchaControl"
+);
+
+
+
+location.reload();
+
+
+}
+  
+// ============================
+// INICIAR ESCANEO
+// ============================
 
 
 function iniciarScanner(){
@@ -453,6 +588,7 @@ scanner.start(
 facingMode:"environment"
 
 },
+
 
 {
 
@@ -499,7 +635,6 @@ alert(
 });
 
 
-
 }
 
 
@@ -509,10 +644,9 @@ alert(
 
 
 
-
-// ===============================
+// ============================
 // VALIDAR QR
-// ===============================
+// ============================
 
 
 function validarQR(codigo){
@@ -533,7 +667,9 @@ cancha:canchaActual
 
 })
 
+
 .then(res=>res.json())
+
 
 .then(data=>{
 
@@ -549,13 +685,11 @@ if(data.estado=="OK"){
 
 
 
-sonidoOK.play();
+sonidoOK();
 
 
 
-resultado.innerHTML = `
-
-
+resultado.innerHTML=`
 
 <div class="ok">
 
@@ -575,7 +709,6 @@ ${data.compra}
 
 
 
-
 <div class="dato">
 
 <b>Número de Entrada:</b><br>
@@ -583,7 +716,6 @@ ${data.compra}
 ${data.codigo}
 
 </div>
-
 
 
 
@@ -597,7 +729,6 @@ ${data.nombre}
 
 
 
-
 <div class="dato">
 
 <b>DNI:</b><br>
@@ -605,7 +736,6 @@ ${data.nombre}
 ${data.dni}
 
 </div>
-
 
 
 
@@ -619,7 +749,6 @@ ${data.dia}
 
 
 
-
 <div class="dato">
 
 <b>Cancha:</b><br>
@@ -630,12 +759,21 @@ ${data.cancha}
 
 
 
+<div class="dato">
+
+<b>Sede:</b><br>
+
+${sedes[data.cancha]}
+
+</div>
+
+
 `;
 
 
 
 document.getElementById("confirmar")
-.style.display="block";
+.classList.remove("oculto");
 
 
 
@@ -646,19 +784,17 @@ document.getElementById("confirmar")
 else{
 
 
-sonidoError.play();
+sonidoError();
 
 
 
-resultado.innerHTML = `
-
+resultado.innerHTML=`
 
 <div class="error">
 
 ❌ ${data.mensaje}
 
 </div>
-
 
 `;
 
@@ -672,7 +808,6 @@ resultado.innerHTML = `
 });
 
 
-
 }
 
 
@@ -681,9 +816,11 @@ resultado.innerHTML = `
 
 
 
-// ===============================
+
+
+// ============================
 // CONFIRMAR INGRESO
-// ===============================
+// ============================
 
 
 function confirmarIngreso(){
@@ -705,7 +842,9 @@ accion:"ingreso"
 })
 
 
+
 .then(res=>res.json())
+
 
 
 .then(data=>{
@@ -716,14 +855,12 @@ if(data.estado=="OK"){
 
 
 
-sonidoOK.play();
+sonidoOK();
 
 
 
 document.getElementById("resultado")
 .innerHTML +=
-
-
 
 `
 
@@ -738,17 +875,16 @@ document.getElementById("resultado")
 
 
 document.getElementById("confirmar")
-.style.display="none";
+.classList.add("oculto");
 
 
 
 document.getElementById("nuevo")
-.style.display="block";
+.classList.remove("oculto");
 
 
 
 }
-
 
 
 });
@@ -763,9 +899,11 @@ document.getElementById("nuevo")
 
 
 
-// ===============================
+
+
+// ============================
 // NUEVO ESCANEO
-// ===============================
+// ============================
 
 
 function nuevoEscaneo(){
@@ -778,7 +916,7 @@ document.getElementById("resultado")
 
 
 document.getElementById("nuevo")
-.style.display="none";
+.classList.add("oculto");
 
 
 
@@ -787,7 +925,6 @@ iniciarScanner();
 
 
 }
-
 
 
 
