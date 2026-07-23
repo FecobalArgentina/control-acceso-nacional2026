@@ -12,61 +12,133 @@
 
 <style>
 
+
 body{
+
 font-family:Arial, sans-serif;
+
 background:#f1f1f1;
+
 margin:0;
+
 padding:15px;
+
 text-align:center;
+
 }
+
 
 
 .contenedor{
 
 background:white;
-max-width:500px;
+
+max-width:520px;
+
 margin:auto;
+
 padding:20px;
-border-radius:15px;
-box-shadow:0 2px 10px #aaa;
+
+border-radius:18px;
+
+box-shadow:0 3px 12px rgba(0,0,0,.25);
 
 }
+
+
+
+.logos{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:15px;
+
+}
+
+
+
+.logos img{
+
+max-width:120px;
+
+max-height:80px;
+
+object-fit:contain;
+
+}
+
 
 
 .titulo{
 
 background:#003b70;
+
 color:white;
+
 padding:18px;
-border-radius:12px;
+
+border-radius:15px;
+
 font-size:24px;
+
 font-weight:bold;
 
 }
 
 
-.sede{
 
-margin-top:20px;
+.subtitulo{
+
+margin-top:15px;
+
 font-size:22px;
+
 font-weight:bold;
+
 color:#003b70;
 
 }
 
 
+
+.sede{
+
+font-size:20px;
+
+margin-top:8px;
+
+font-weight:bold;
+
+}
+
+
+
 .boton{
 
 width:100%;
-padding:18px;
+
+padding:20px;
+
 margin-top:20px;
+
 font-size:22px;
+
+font-weight:bold;
+
 border:none;
-border-radius:12px;
+
+border-radius:14px;
+
 background:#003b70;
+
 color:white;
 
 }
+
 
 
 #lector{
@@ -76,45 +148,92 @@ margin-top:20px;
 }
 
 
+
 #resultado{
 
 margin-top:20px;
+
 font-size:20px;
 
 }
 
 
+
 .ok{
 
-color:green;
+background:#d4edda;
+
+color:#155724;
+
+padding:18px;
+
+border-radius:12px;
+
+font-size:25px;
+
 font-weight:bold;
 
 }
+
 
 
 .error{
 
-color:red;
+background:#f8d7da;
+
+color:#721c24;
+
+padding:18px;
+
+border-radius:12px;
+
+font-size:22px;
+
 font-weight:bold;
 
 }
 
 
+
 .dato{
 
-background:#eee;
-padding:12px;
+background:#eeeeee;
+
+padding:14px;
+
 border-radius:10px;
+
 margin-top:10px;
+
+font-size:19px;
 
 }
 
 
 
+.ingreso{
+
+background:#003b70;
+
+color:white;
+
+padding:15px;
+
+border-radius:12px;
+
+margin-top:15px;
+
+font-size:22px;
+
+font-weight:bold;
+
+}
+
+
 </style>
 
-</head>
 
+</head>
 
 
 <body>
@@ -123,19 +242,42 @@ margin-top:10px;
 <div class="contenedor">
 
 
+
+<div class="logos">
+
+
+<img src="imagenes/logo fecobal.png">
+
+
+<img src="imagenes/logo cah.png">
+
+
+</div>
+
+
+
+
 <div class="titulo">
 
 🏆 NACIONAL DE CLUBES<br>
+
 ADULTOS A 2026
+
+</div>
+
+
+
+<div class="subtitulo" id="cancha">
+
+CONTROL DE ACCESO
 
 </div>
 
 
 <div class="sede" id="sede">
 
-CONTROL DE ACCESO
-
 </div>
+
 
 
 
@@ -146,16 +288,23 @@ CONTROL DE ACCESO
 </button>
 
 
+
 <div id="lector"></div>
+
 
 
 <div id="resultado"></div>
 
 
-<button 
+
+<button
+
 id="confirmar"
+
 class="boton"
+
 style="display:none"
+
 onclick="confirmarIngreso()">
 
 ✅ CONFIRMAR INGRESO
@@ -164,30 +313,63 @@ onclick="confirmarIngreso()">
 
 
 
+<button
+
+id="nuevo"
+
+class="boton"
+
+style="display:none"
+
+onclick="nuevoEscaneo()">
+
+🔄 ESCANEAR SIGUIENTE
+
+</button>
+
+
+
 </div>
-
-
-
-
-
 <script>
 
 
-const API_URL = 
+const API_URL =
 "https://script.google.com/macros/s/AKfycbzNB_Xb8n62PgtbQKiVOGshX0bEzadaC-99jRtdPCMp-MeTnXLaOlwfyAwfBIf95uP4/exec";
 
 
 
-let codigoActual="";
+let codigoActual = "";
 
-let canchaActual="Cancha 1";
+let scanner = null;
 
-let scanner;
+let canchaActual = "Cancha 1";
+
+
 
 
 
 // ===============================
-// LEER CANCHA DESDE URL
+// SONIDOS
+// ===============================
+
+
+const sonidoOK = new Audio(
+"https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+);
+
+
+const sonidoError = new Audio(
+"https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+);
+
+
+
+
+
+
+
+// ===============================
+// CONFIGURAR CANCHA
 // ===============================
 
 
@@ -217,7 +399,8 @@ canchaActual="Cancha 3";
 
 
 
-let sedes={
+
+let sedes = {
 
 "Cancha 1":"Jockey Club",
 
@@ -229,11 +412,18 @@ let sedes={
 
 
 
+
+document.getElementById("cancha").innerHTML =
+
+"CONTROL "+canchaActual;
+
+
+
 document.getElementById("sede").innerHTML =
 
-"CONTROL "+canchaActual+
-"<br>"+
 sedes[canchaActual];
+
+
 
 
 
@@ -247,22 +437,28 @@ sedes[canchaActual];
 function iniciarScanner(){
 
 
-scanner =
-new Html5Qrcode("lector");
+
+document.getElementById("resultado").innerHTML="";
+
+
+
+scanner = new Html5Qrcode("lector");
 
 
 
 scanner.start(
 
 {
+
 facingMode:"environment"
+
 },
 
 {
 
 fps:10,
 
-qrbox:250
+qrbox:260
 
 },
 
@@ -270,7 +466,9 @@ qrbox:250
 function(codigo){
 
 
+
 codigoActual=codigo;
+
 
 
 scanner.stop();
@@ -292,16 +490,21 @@ function(error){}
 
 .catch(function(err){
 
+
 alert(
-"No se pudo abrir la cámara: "+
-err
+"Error cámara: "+err
 );
+
 
 });
 
 
 
 }
+
+
+
+
 
 
 
@@ -330,7 +533,7 @@ cancha:canchaActual
 
 })
 
-.then(response=>response.json())
+.then(res=>res.json())
 
 .then(data=>{
 
@@ -341,17 +544,47 @@ document.getElementById("resultado");
 
 
 
+
 if(data.estado=="OK"){
 
 
 
-resultado.innerHTML=`
+sonidoOK.play();
+
+
+
+resultado.innerHTML = `
+
+
 
 <div class="ok">
 
 ✅ ENTRADA VÁLIDA
 
 </div>
+
+
+
+<div class="dato">
+
+<b>ID Compra:</b><br>
+
+${data.compra}
+
+</div>
+
+
+
+
+<div class="dato">
+
+<b>Número de Entrada:</b><br>
+
+${data.codigo}
+
+</div>
+
+
 
 
 <div class="dato">
@@ -363,6 +596,8 @@ ${data.nombre}
 </div>
 
 
+
+
 <div class="dato">
 
 <b>DNI:</b><br>
@@ -370,6 +605,8 @@ ${data.nombre}
 ${data.dni}
 
 </div>
+
+
 
 
 <div class="dato">
@@ -381,6 +618,8 @@ ${data.dia}
 </div>
 
 
+
+
 <div class="dato">
 
 <b>Cancha:</b><br>
@@ -388,6 +627,8 @@ ${data.dia}
 ${data.cancha}
 
 </div>
+
+
 
 `;
 
@@ -400,18 +641,24 @@ document.getElementById("confirmar")
 
 }
 
+
+
 else{
 
 
-resultado.innerHTML=
+sonidoError.play();
 
-`
+
+
+resultado.innerHTML = `
+
 
 <div class="error">
 
 ❌ ${data.mensaje}
 
 </div>
+
 
 `;
 
@@ -421,10 +668,13 @@ resultado.innerHTML=
 
 
 
+
 });
 
 
+
 }
+
 
 
 
@@ -454,17 +704,30 @@ accion:"ingreso"
 
 })
 
-.then(()=>{
+
+.then(res=>res.json())
+
+
+.then(data=>{
+
+
+
+if(data.estado=="OK"){
+
+
+
+sonidoOK.play();
+
 
 
 document.getElementById("resultado")
 .innerHTML +=
 
+
+
 `
 
-<div class="ok">
-
-<br>
+<div class="ingreso">
 
 ✅ INGRESO REGISTRADO
 
@@ -479,11 +742,52 @@ document.getElementById("confirmar")
 
 
 
+document.getElementById("nuevo")
+.style.display="block";
+
+
+
+}
+
+
+
 });
 
 
 
 }
+
+
+
+
+
+
+
+// ===============================
+// NUEVO ESCANEO
+// ===============================
+
+
+function nuevoEscaneo(){
+
+
+
+document.getElementById("resultado")
+.innerHTML="";
+
+
+
+document.getElementById("nuevo")
+.style.display="none";
+
+
+
+iniciarScanner();
+
+
+
+}
+
 
 
 
